@@ -245,25 +245,41 @@ export const fetchWeatherByCity = async (city: string): Promise<FullWeatherData>
     return generateMockWeatherData(cleanCity);
   }
 };
-
 export const fetchWeatherByCoords = async (lat: number, lon: number): Promise<FullWeatherData> => {
   const cleanKey = API_KEY.trim();
 
   if (!isApiKeyValid()) {
+    console.warn('API Key is invalid or missing.');
     return generateMockWeatherData('My Location');
   }
 
+  // 1. Rounding coordinates to 4 decimal places ensures compatibility
+  const latStr = lat.toFixed(4);
+  const lonStr = lon.toFixed(4);
+
+  const currentUrl = `${BASE_URL}/weather?lat=${latStr}&lon=${lonStr}&appid=${cleanKey}&units=metric`;
+  const forecastUrl = `${BASE_URL}/forecast?lat=${latStr}&lon=${lonStr}&appid=${cleanKey}&units=metric`;
+
   try {
-    const currentUrl = `${BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${cleanKey}&units=metric`;
-    const forecastUrl = `${BASE_URL}/forecast?lat=${lat}&lon=${lon}&appid=${cleanKey}&units=metric`;
+    console.log("Attempting API fetch...");
+    console.log("URL:", currentUrl);
 
     const [currentRes, forecastRes] = await Promise.all([
       fetch(currentUrl),
       fetch(forecastUrl)
     ]);
 
-    if (!currentRes.ok || !forecastRes.ok) {
-      throw new Error('Coordinate lookup failure across operational endpoints.');
+    // 2. Debugging specific status codes
+    if (!currentRes.ok) {
+      const errorText = await currentRes.text();
+      console.error(`Current Fetch Error (${currentRes.status}):`, errorText);
+      throw new Error(`Current API Error: ${currentRes.status}`);
+    }
+
+    if (!forecastRes.ok) {
+      const errorText = await forecastRes.text();
+      console.error(`Forecast Fetch Error (${forecastRes.status}):`, errorText);
+      throw new Error(`Forecast API Error: ${forecastRes.status}`);
     }
 
     const currentData = await currentRes.json();
@@ -277,8 +293,8 @@ export const fetchWeatherByCoords = async (lat: number, lon: number): Promise<Fu
       weekly,
     };
   } catch (error) {
-    console.error('Live coordinate fetch failed, using fallback mock:', error);
-
+    console.error('Final Catch Block - Fetch failed:', error);
+    // 3. Falling back to mock data
     return generateMockWeatherData('My Location');
   }
 };
