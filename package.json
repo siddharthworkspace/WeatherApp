@@ -10,10 +10,19 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-community/blur": "^4.4.1",
+    "@react-native-community/geolocation": "^3.4.0",
+    "@react-native/new-app-screen": "0.86.0",
+    "lottie-react-native": "^7.3.8",
+    "lucide-react-native": "^1.18.0",
     "react": "19.2.3",
     "react-native": "0.86.0",
-    "@react-native/new-app-screen": "0.86.0",
-    "react-native-safe-area-context": "^5.5.2"
+    "react-native-bootsplash": "^7.3.1",
+    "react-native-flash-message": "^0.4.2",
+    "react-native-linear-gradient": "^2.8.3",
+    "react-native-safe-area-context": "^5.8.0",
+    "react-native-svg": "^15.15.5",
+    "react-native-worklets": "^0.9.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
